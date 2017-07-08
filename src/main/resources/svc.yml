@@ -1,0 +1,99 @@
+name: {{FRAMEWORK_NAME}}
+scheduler:
+  principal: {{FRAMEWORK_PRINCIPAL}}
+pods:
+  root:
+    count: {{ROOT_COUNT}}
+    uris:
+      - {{MXNET_URI}}
+    image: {{MXNET_DOCKER_IMAGE}}
+    user: {{FRAMEWORK_USER}}
+    resource-sets:
+      root-resources:
+        cpus: {{ROOT_CPUS}}
+        memory: {{ROOT_MEM}}
+        ports:
+          internal:
+            port: {{ROOT_PORT}}
+            vip:
+              prefix: internal
+              port: {{ROOT_PORT}}
+        volume:
+          path: "mxnet-root-path"
+          type: {{ROOT_DISK_TYPE}}
+          size: {{ROOT_DISK}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: root-resources
+        cmd: "export DMLC_ROLE='scheduler' && \
+              export DMLC_PS_ROOT_PORT={{ROOT_PORT}} && \
+              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+              export DMLC_NUM_WORKER={{WORKER_COUNT}} && \
+              export DMLC_NUM_SERVER={{SERVER_COUNT}} && \
+              python ./mxnet-{{MXNET_VERSION}}/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+  server:
+    count: {{SERVER_COUNT}}
+    uris:
+      - {{MXNET_URI}}
+    image: {{MXNET_DOCKER_IMAGE}}
+    user: {{FRAMEWORK_USER}}
+    resource-sets:
+      server-resources:
+        cpus: {{SERVER_CPUS}}
+        memory: {{SERVER_MEM}}
+        volume:
+          path: "mxnet-server-path"
+          type: {{SERVER_DISK_TYPE}}
+          size: {{SERVER_DISK}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: server-resources
+        cmd: "export DMLC_ROLE='server' && \
+              export DMLC_SERVER_ID={{POD_INSTANCE_INDEX}} && \
+              export DMLC_PS_ROOT_PORT={{ROOT_PORT}} && \
+              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+              export DMLC_NUM_WORKER={{WORKER_COUNT}} && \
+              export DMLC_NUM_SERVER={{SERVER_COUNT}} && \
+              python ./mxnet-{{MXNET_VERSION}}/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+  worker:
+    count: {{WORKER_COUNT}}
+    uris:
+      - {{MXNET_URI}}
+    image: {{MXNET_DOCKER_IMAGE}}
+    user: {{FRAMEWORK_USER}}
+    resource-sets:
+      worker-resources:
+        cpus: {{WORKER_CPUS}}
+        memory: {{WORKER_MEM}}
+        volume:
+          path: "mxnet-worker-path"
+          type: {{WORKER_DISK_TYPE}}
+          size: {{WORKER_DISK}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: worker-resources
+        cmd: "export DMLC_ROLE='worker' && \
+              export DMLC_WORKER_ID={{POD_INSTANCE_INDEX}} && \
+              export DMLC_PS_ROOT_PORT={{ROOT_PORT}} && \
+              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+              export DMLC_NUM_WORKER={{WORKER_COUNT}} && \
+              export DMLC_NUM_SERVER={{SERVER_COUNT}} && \
+              python ./mxnet-{{MXNET_VERSION}}/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+plans:
+  deploy:
+    strategy: serial 
+    phases:
+      root-deploy:
+        strategy: parallel
+        pod: root
+      server-deploy:
+        strategy: parallel
+        pod: server
+      worker-deploy:
+        strategy: parallel
+        pod: worker
+
+

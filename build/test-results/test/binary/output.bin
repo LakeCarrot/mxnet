@@ -1,0 +1,467 @@
+…INFO  2017-07-06 18:33:02,528 [Test worker] com.mesosphere.sdk.mxnet.scheduler.ServiceSpecTest:testYaml(74): Configured environment:
+bCONFIG_TEMPLATE_PATH=/Users/bohu/Workspace/dcos-mxnet/dcos-commons/frameworks/mxnet/src/main/dist
+EXECUTOR_URI=
+FRAMEWORK_NAME=mxnet
+LIBMESOS_URI=
+ MXNET_DOCKER_IMAGE=mxnet/python
+NODE_COUNT=2
+NODE_CPUS=0.1
+NODE_DISK=5000
+NODE_DISK_TYPE=ROOT
+NODE_MEM=512
+PORT_API=8080
+ROOT_COUNT=2
+ROOT_CPUS=0.1
+ROOT_DISK=5000
+ROOT_DISK_TYPE=ROOT
+ROOT_MEM=512
+SERVER_COUNT=2
+SERVER_CPUS=0.1
+SERVER_DISK=5000
+SERVER_DISK_TYPE=ROOT
+SERVER_MEM=512
+SLEEP_DURATION=1000
+WORKER_COUNT=2
+WORKER_CPUS=0.1
+WORKER_DISK=5000
+WORKER_DISK_TYPE=ROOT
+WORKER_MEM=512
+ŠINFO  2017-07-06 18:33:03,115 [Test worker] com.mesosphere.sdk.specification.yaml.RawServiceSpec$Builder:build(64): Rendered ServiceSpec:
+name: mxnet
+scheduler:
+  principal: 
+pods:
+  root:
+    count: 2
+
+    uris:
+	      - 
+    image: mxnet/python
+    user: 
+    resource-sets:
+      root-resources:
+        cpus: 0.1
+        memory: 512
+        ports:
+          internal:
+            port: 9091
+            vip:
+              prefix: internal
+              port: 9091
+        volume:
+"          path: "mxnet-root-path"
+          type: ROOT
+          size: 5000
+    tasks:
+      node:
+        goal: FINISHED
+%        resource-set: root-resources
+0        cmd: "export DMLC_ROLE='scheduler' && \
+=              export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && \
+1              export DMLC_PS_ROOT_PORT=9091 && \
+T              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+o              python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+
+  server:
+    count: 2
+
+    uris:
+	      - 
+    image: mxnet/python
+    user: 
+    resource-sets:
+      server-resources:
+        cpus: 0.1
+        memory: 512
+        volume:
+$          path: "mxnet-server-path"
+          type: ROOT
+          size: 5000
+    tasks:
+      node:
+        goal: FINISHED
+'        resource-set: server-resources
+-        cmd: "export DMLC_ROLE='server' && \
+=              export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && \
+1              export DMLC_PS_ROOT_PORT=9091 && \
+T              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+o              python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+
+  worker:
+    count: 2
+
+    uris:
+	      - 
+    image: mxnet/python
+    user: 
+    resource-sets:
+      worker-resources:
+        cpus: 0.1
+        memory: 512
+        volume:
+$          path: "mxnet-worker-path"
+          type: ROOT
+          size: 5000
+    tasks:
+      node:
+        goal: FINISHED
+'        resource-set: worker-resources
+-        cmd: "export DMLC_ROLE='worker' && \
+=              export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && \
+1              export DMLC_PS_ROOT_PORT=9091 && \
+T              export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && \
+o              python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async"
+plans:
+
+  deploy:
+    strategy: serial 
+    phases:
+      root-deploy:
+        strategy: parallel
+        pod: root
+      server-deploy:
+        strategy: parallel
+        pod: server
+      worker-deploy:
+        strategy: parallel
+        pod: worker
+
+
+
+’INFO  2017-07-06 18:33:03,761 [Test worker] org.hibernate.validator.internal.util.Version:<clinit>(30): HV000001: Hibernate Validator 5.3.2.Final
+’INFO  2017-07-06 18:33:07,215 [Test worker] com.mesosphere.sdk.scheduler.DefaultScheduler:fixLastDeploymentType(315): Fixing last deployment type
+wINFO  2017-07-06 18:33:07,222 [Test worker] com.mesosphere.sdk.scheduler.DefaultScheduler:getPlans(277): Getting plans
+¢INFO  2017-07-06 18:33:07,252 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: root-0, with tasks: [node]
+‚INFO  2017-07-06 18:33:07,261 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [root-0-node]
+¼WARN  2017-07-06 18:33:07,265 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: root-0-node at: Tasks/root-0-node/TaskInfo
+¸INFO  2017-07-06 18:33:07,290 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): root-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¢INFO  2017-07-06 18:33:07,291 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: root-1, with tasks: [node]
+‚INFO  2017-07-06 18:33:07,292 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [root-1-node]
+¼WARN  2017-07-06 18:33:07,293 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: root-1-node at: Tasks/root-1-node/TaskInfo
+¸INFO  2017-07-06 18:33:07,295 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): root-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,310 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: server-0, with tasks: [node]
+„INFO  2017-07-06 18:33:07,311 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [server-0-node]
+ÀWARN  2017-07-06 18:33:07,312 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: server-0-node at: Tasks/server-0-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,313 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): server-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,314 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: server-1, with tasks: [node]
+„INFO  2017-07-06 18:33:07,314 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [server-1-node]
+ÀWARN  2017-07-06 18:33:07,316 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: server-1-node at: Tasks/server-1-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,317 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): server-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,318 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: worker-0, with tasks: [node]
+„INFO  2017-07-06 18:33:07,319 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [worker-0-node]
+ÀWARN  2017-07-06 18:33:07,321 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: worker-0-node at: Tasks/worker-0-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,321 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): worker-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,322 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: worker-1, with tasks: [node]
+„INFO  2017-07-06 18:33:07,323 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [worker-1-node]
+ÀWARN  2017-07-06 18:33:07,325 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: worker-1-node at: Tasks/worker-1-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,326 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): worker-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+’INFO  2017-07-06 18:33:07,381 [Test worker] com.mesosphere.sdk.scheduler.DefaultScheduler:updateConfig(516): Updating config with 5 validators...
+“INFO  2017-07-06 18:33:07,403 [Test worker] com.mesosphere.sdk.config.DefaultConfigurationUpdater:updateConfiguration(76): New prospective config:
+{
+  "name" : "mxnet",
+  "role" : "mxnet-role",
+#  "principal" : "mxnet-principal",
+  "api-port" : 8080,
+  "web-url" : null,
+%  "zookeeper" : "master.mesos:2181",
+  "pod-specs" : [ {
+    "type" : "root",
+    "user" : "",
+    "count" : 2,
+    "image" : "mxnet/python",
+    "networks" : [ ],
+    "rlimits" : [ ],
+*    "uris" : [ "", "executor-test-uri" ],
+    "task-specs" : [ {
+      "name" : "node",
+      "goal" : "FINISHED",
+      "resource-set" : {
+!        "id" : "root-resources",
+(        "resource-specifications" : [ {
++          "@type" : "DefaultResourceSpec",
+          "name" : "cpus",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 0.1
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        }, {
++          "@type" : "DefaultResourceSpec",
+          "name" : "mem",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 512.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        }, {
+$          "@type" : "NamedVIPSpec",
+          "value" : {
+            "type" : "RANGES",
+            "scalar" : null,
+            "ranges" : {
+              "range" : [ {
+                 "begin" : 9091,
+                "end" : 9091
+              } ]
+            },
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "env-key" : null,
+$          "port-name" : "internal",
+          "protocol" : "tcp",
+%          "visibility" : "EXTERNAL",
+#          "vip-name" : "internal",
+          "vip-port" : 9091,
+           "networkNames" : [ ],
+          "name" : "ports"
+        } ],
+&        "volume-specifications" : [ {
+)          "@type" : "DefaultVolumeSpec",
+          "type" : "ROOT",
+0          "container-path" : "mxnet-root-path",
+          "name" : "disk",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 5000.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+!          "envKey" : "DISK_SIZE"
+        } ],
+        "role" : "mxnet-role",
+(        "principal" : "mxnet-principal"
+	      },
+      "command-spec" : {
+§        "value" : "export DMLC_ROLE='scheduler' && export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && export DMLC_PS_ROOT_PORT=9091 && export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async",
+        "environment" : { }
+	      },
+"      "health-check-spec" : null,
+%      "readiness-check-spec" : null,
+      "config-files" : [ ],
+      "discovery-spec" : null
+	    } ],
+    "placement-rule" : null,
+    "volumes" : [ ],
+    "pre-reserved-role" : "*",
+    "secrets" : [ ]
+  }, {
+    "type" : "server",
+    "user" : "",
+    "count" : 2,
+    "image" : "mxnet/python",
+    "networks" : [ ],
+    "rlimits" : [ ],
+*    "uris" : [ "", "executor-test-uri" ],
+    "task-specs" : [ {
+      "name" : "node",
+      "goal" : "FINISHED",
+      "resource-set" : {
+#        "id" : "server-resources",
+(        "resource-specifications" : [ {
++          "@type" : "DefaultResourceSpec",
+          "name" : "cpus",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 0.1
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        }, {
++          "@type" : "DefaultResourceSpec",
+          "name" : "mem",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 512.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        } ],
+&        "volume-specifications" : [ {
+)          "@type" : "DefaultVolumeSpec",
+          "type" : "ROOT",
+2          "container-path" : "mxnet-server-path",
+          "name" : "disk",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 5000.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+!          "envKey" : "DISK_SIZE"
+        } ],
+        "role" : "mxnet-role",
+(        "principal" : "mxnet-principal"
+	      },
+      "command-spec" : {
+¤        "value" : "export DMLC_ROLE='server' && export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && export DMLC_PS_ROOT_PORT=9091 && export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async",
+        "environment" : { }
+	      },
+"      "health-check-spec" : null,
+%      "readiness-check-spec" : null,
+      "config-files" : [ ],
+      "discovery-spec" : null
+	    } ],
+    "placement-rule" : null,
+    "volumes" : [ ],
+    "pre-reserved-role" : "*",
+    "secrets" : [ ]
+  }, {
+    "type" : "worker",
+    "user" : "",
+    "count" : 2,
+    "image" : "mxnet/python",
+    "networks" : [ ],
+    "rlimits" : [ ],
+*    "uris" : [ "", "executor-test-uri" ],
+    "task-specs" : [ {
+      "name" : "node",
+      "goal" : "FINISHED",
+      "resource-set" : {
+#        "id" : "worker-resources",
+(        "resource-specifications" : [ {
++          "@type" : "DefaultResourceSpec",
+          "name" : "cpus",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 0.1
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        }, {
++          "@type" : "DefaultResourceSpec",
+          "name" : "mem",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 512.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+          "envKey" : null
+        } ],
+&        "volume-specifications" : [ {
+)          "@type" : "DefaultVolumeSpec",
+          "type" : "ROOT",
+2          "container-path" : "mxnet-worker-path",
+          "name" : "disk",
+          "value" : {
+            "type" : "SCALAR",
+            "scalar" : {
+              "value" : 5000.0
+            },
+            "ranges" : null,
+            "set" : null,
+            "text" : null
+          },
+!          "role" : "mxnet-role",
+%          "pre-reserved-role" : "*",
++          "principal" : "mxnet-principal",
+!          "envKey" : "DISK_SIZE"
+        } ],
+        "role" : "mxnet-role",
+(        "principal" : "mxnet-principal"
+	      },
+      "command-spec" : {
+¤        "value" : "export DMLC_ROLE='worker' && export DMLC_SERVER_ID=$POD_INSTANCE_INDEX && export DMLC_PS_ROOT_PORT=9091 && export DMLC_PS_ROOT_URI='internal.mxnet.l4lb.thisdcos.directory' && python ./mxnet-/example/image-classification/train_mnist.py --network mlp --kv-store dist_async",
+        "environment" : { }
+	      },
+"      "health-check-spec" : null,
+%      "readiness-check-spec" : null,
+      "config-files" : [ ],
+      "discovery-spec" : null
+	    } ],
+    "placement-rule" : null,
+    "volumes" : [ ],
+    "pre-reserved-role" : "*",
+    "secrets" : [ ]
+  } ],
+&  "replacement-failure-policy" : null
+}
+¿INFO  2017-07-06 18:33:07,433 [Test worker] com.mesosphere.sdk.config.DefaultConfigurationUpdater:updateConfiguration(86): Skipping config diff: There is no old config target to diff against
+õINFO  2017-07-06 18:33:07,453 [Test worker] com.mesosphere.sdk.config.DefaultConfigurationUpdater:updateConfiguration(120): Changes detected between current target configuration 'null' and new configuration. Setting target to new configuration.
+¾INFO  2017-07-06 18:33:07,765 [Test worker] com.mesosphere.sdk.config.DefaultConfigurationUpdater:cleanupDuplicateAndUnusedConfigs(210): Config 0e22c316-a5d3-4fe3-9bd3-c84077ced77e : mxnet 
+ŸINFO  2017-07-06 18:33:07,766 [Test worker] com.mesosphere.sdk.config.DefaultConfigurationUpdater:clearConfigsNotListed(307): Cleaning up 0 unused configs: []
+wINFO  2017-07-06 18:33:07,768 [Test worker] com.mesosphere.sdk.scheduler.DefaultScheduler:getPlans(277): Getting plans
+¢INFO  2017-07-06 18:33:07,769 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: root-0, with tasks: [node]
+‚INFO  2017-07-06 18:33:07,771 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [root-0-node]
+¼WARN  2017-07-06 18:33:07,772 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: root-0-node at: Tasks/root-0-node/TaskInfo
+¸INFO  2017-07-06 18:33:07,778 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): root-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¢INFO  2017-07-06 18:33:07,779 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: root-1, with tasks: [node]
+‚INFO  2017-07-06 18:33:07,780 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [root-1-node]
+¼WARN  2017-07-06 18:33:07,781 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: root-1-node at: Tasks/root-1-node/TaskInfo
+¸INFO  2017-07-06 18:33:07,782 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): root-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,782 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: server-0, with tasks: [node]
+„INFO  2017-07-06 18:33:07,783 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [server-0-node]
+ÀWARN  2017-07-06 18:33:07,784 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: server-0-node at: Tasks/server-0-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,785 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): server-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,785 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: server-1, with tasks: [node]
+„INFO  2017-07-06 18:33:07,786 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [server-1-node]
+ÀWARN  2017-07-06 18:33:07,787 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: server-1-node at: Tasks/server-1-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,788 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): server-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,788 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: worker-0, with tasks: [node]
+„INFO  2017-07-06 18:33:07,789 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [worker-0-node]
+ÀWARN  2017-07-06 18:33:07,790 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: worker-0-node at: Tasks/worker-0-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,791 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): worker-0:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¤INFO  2017-07-06 18:33:07,793 [Test worker] com.mesosphere.sdk.scheduler.plan.DefaultStepFactory:getStep(39): Generating step for pod: worker-1, with tasks: [node]
+„INFO  2017-07-06 18:33:07,794 [Test worker] com.mesosphere.sdk.offer.TaskUtils:getTaskNames(73): PodInstance tasks: [worker-1-node]
+ÀWARN  2017-07-06 18:33:07,795 [Test worker] com.mesosphere.sdk.state.DefaultStateStore:fetchTask(243): No TaskInfo found for the requested name: worker-1-node at: Tasks/worker-1-node/TaskInfo
+ºINFO  2017-07-06 18:33:07,796 [Test worker] com.mesosphere.sdk.scheduler.plan.DeploymentStep:setStatus(66): worker-1:[node]: changed status from: PENDING to: PENDING (interrupted=false)
+¥INFO  2017-07-06 18:33:07,797 [Test worker] com.mesosphere.sdk.scheduler.DefaultScheduler:overrideDeployPlan(397): Update type: 'DEPLOY', Found update plan: 'false'

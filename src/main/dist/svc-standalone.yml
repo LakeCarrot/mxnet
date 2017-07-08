@@ -1,0 +1,28 @@
+name: {{FRAMEWORK_NAME}}
+scheduler:
+  principal: {{FRAMEWORK_PRINCIPAL}}
+pods:
+  mxnet:
+    count: {{NODE_COUNT}}
+    placement: {{NODE_PLACEMENT}} 
+    image: {{MXNET_DOCKER_IMAGE}}
+    user: {{FRAMEWORK_USER}}
+    uris:
+      - {{MXNET_URI}}
+    resource-sets:
+      server-resources:
+        cpus: {{NODE_CPUS}}
+        memory: {{NODE_MEM}}
+        volume:
+          path: "mxnet-container-path"
+          type: {{NODE_DISK_TYPE}}
+          size: {{NODE_DISK}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: server-resources
+        #cmd: "python -c 'import mxnet as mx; a = mx.nd.ones((2, 3)); b = a * 2 + 1; b.asnumpy(); print b;' && \
+        #      sleep $SLEEP_DURATION"
+        cmd: "python ./mxnet-{{MXNET_VERSION}}/example/image-classification/train_mnist.py --network mlp"
+        env:
+          SLEEP_DURATION: {{SLEEP_DURATION}}

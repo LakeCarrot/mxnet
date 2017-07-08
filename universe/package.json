@@ -1,0 +1,13 @@
+{
+  "packagingVersion": "3.0",
+  "minDcosReleaseVersion": "1.8",
+  "name": "mxnet",
+  "version": "{{package-version}}",
+  "maintainer": "support@mesosphere.com",
+  "description": "MXNet on DC/OS",
+  "selected": false,
+  "framework": true,
+  "tags": ["mxnet"],
+  "postInstallNotes": "DC/OS MXNet is being installed!\n\n\tDocumentation: http://MXNet.COM/DOCS\n\tIssues: http://MXNet.COM/SUPPORT",
+  "postUninstallNotes": "DC/OS MXNet is being uninstalled."
+}

@@ -1,0 +1,6 @@
+
+                "SERVER_COUNT", "2",
+                "SERVER_CPUS", "0.1",
+                "SERVER_MEM", "512",
+                "SERVER_DISK", "5000",
+                "SERVER_DISK_TYPE", "ROOT",

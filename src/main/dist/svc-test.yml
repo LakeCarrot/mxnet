@@ -1,0 +1,55 @@
+name: {{FRAMEWORK_NAME}}
+scheduler:
+  principal: {{FRAMEWORK_PRINCIPAL}}
+pods:
+  root:
+    count: 1
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: root-resources
+        cmd: > 
+                # collect all the servers and workers' (ip, port) info
+                ./collect.sh > hosts
+
+                # launch all ps servers and workers and wait for the result
+                ./launch.sh -H hosts --num-workers {{WORKER_COUNT}} --num-servers {{SERVER_COUNT}} {{WORKLOAD_SPECIFIC_COMMAND}} > result
+
+  server:
+    count: {{SERVER_COUNT}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: server-resources
+        cmd: >
+                # register hostname to root node and wait for launching the server daemon
+                ./register.sh {{SCHEDULER_HOSTNAME}} {{ROLE}}
+        env:
+          ROLE: 'server'
+
+  worker:
+    count: {{WORKER_COUNT}}
+    tasks:
+      node:
+        goal: FINISHED
+        resource-set: worker-resources
+        cmd: >
+                # register hostname to root node and wait for launching the worker daemon
+                ./register.sh {{SCHEDULER_HOSTNAME}} {{ROLE}}
+        env:
+          ROLE: 'worker'
+ plan:
+   deploy:
+     strategy: serial 
+     phases:
+       root-deploy:
+         strategy: parallel
+         pod: root
+       server-deploy:
+         strategy: parallel
+         pod: server
+       worker-deploy:
+         strategy: parallel
+         pod: worker
+
+

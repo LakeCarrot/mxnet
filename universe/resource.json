@@ -1,0 +1,47 @@
+{
+  "assets": {
+    "container": {
+      "docker": {
+        "mxnet": "mxnet/python"
+      }
+    },
+    "uris": {
+      "jre-tar-gz": "{{jre-url}}",
+      "libmesos-bundle-tar-gz": "{{libmesos-bundle-url}}",
+      "scheduler-zip": "{{artifact-dir}}/mxnet-scheduler.zip",
+      "executor-zip": "{{artifact-dir}}/executor.zip",
+      "bootstrap-zip": "{{artifact-dir}}/bootstrap.zip",
+      "mxnet-zip": "https://github.com/dmlc/mxnet/archive/v0.10.0.zip"
+    }
+  },
+  "images": {
+    "icon-small": "http://i.imgur.com/wcQSMOm.png?1",
+    "icon-medium": "http://i.imgur.com/05tUgdC.png?1",
+    "icon-large": "http://i.imgur.com/lV1WoDb.png?1"
+  },
+  "cli":{
+    "binaries":{
+      "darwin":{
+        "x86-64":{
+          "contentHash":[ { "algo":"sha256", "value":"{{sha256:dcos-mxnet-darwin}}" } ],
+          "kind":"executable",
+          "url":"{{artifact-dir}}/dcos-mxnet-darwin"
+        }
+      },
+      "linux":{
+        "x86-64":{
+          "contentHash":[ { "algo":"sha256", "value":"{{sha256:dcos-mxnet-linux}}" } ],
+          "kind":"executable",
+          "url":"{{artifact-dir}}/dcos-mxnet-linux"
+        }
+      },
+      "windows":{
+        "x86-64":{
+          "contentHash":[ { "algo":"sha256", "value":"{{sha256:dcos-mxnet.exe}}" } ],
+          "kind":"executable",
+          "url":"{{artifact-dir}}/dcos-mxnet.exe"
+        }
+      }
+    }
+  }
+}
